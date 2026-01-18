@@ -12,11 +12,11 @@ The first file is **`solution_cv.py`**. It does **traditional image processing**
 * **Contours**: Contours get detected next, just the **external ones**.
 * **Filtering**: Finally, it **filters small contours by area** so you don’t count junk.
 
-### **Usage for `solution_cv.py**`
+### **Usage for `solution_cv.py`**
 
 For usage, the script looks at **directories** set in the main block. You have to change `dataset_screw_bolt` and `dataset_screws` to your own paths, I suppose. Run it with `python solution_cv.py`, and outputs go to `output_screw_bolt` and `output_screws` folders.
 
-### **Advanced Segmentation: `solution_cv_watershed.py**`
+### **Advanced Segmentation: `solution_cv_watershed.py`**
 
 Another one is **`solution_cv_watershed.py`**. This uses the **watershed algorithm**, which helps **separate touching objects** that might stick together in basic thresholding. It feels like a step up for messy images.
 
@@ -26,7 +26,7 @@ Another one is **`solution_cv_watershed.py`**. This uses the **watershed algorit
 * **Markers**: Markers come from **sure foreground and background** areas, and **watershed splits the regions**.
 * **Counting**: Counting happens by **unique markers** for each object.
 
-### **Usage for `solution_cv_watershed.py**`
+### **Usage for `solution_cv_watershed.py`**
 
 You run it on a **single image** like `python solution_cv_watershed.py` followed by the path. If you forget the path, it uses some **hardcoded one** inside.
 
