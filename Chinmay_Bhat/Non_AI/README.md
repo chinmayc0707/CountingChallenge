@@ -1,52 +1,39 @@
-# Non-AI Computer Vision Solutions
+### **Overview of Computer Vision Counting**
 
-This directory contains Computer Vision based solutions for counting items (screws, bolts) in images using OpenCV, without the use of Deep Learning models.
+This folder has some **computer vision stuff** for counting things like **screws and bolts** in pictures. It uses **OpenCV** but skips **deep learning models**, which is kind of nice if you want something simpler. I guess that's the main point here.
 
-## Files
+### **Traditional Processing: `solution_cv.py**`
 
-### 1. `solution_cv.py`
-This script uses traditional image processing techniques to detect and count objects.
+The first file is **`solution_cv.py`**. It does **traditional image processing** to find and count objects.
 
-**Methodology:**
-1.  **Preprocessing**: Grayscale conversion and Gaussian Blurring.
-2.  **Thresholding**: Otsu's binarization with inverse thresholding.
-3.  **Morphology**: Opening and Dilation to clean noise and solidify objects.
-4.  **Contour Detection**: Finding external contours.
-5.  **Filtering**: Filtering out small contours based on area.
+* **Preprocessing**: It starts with turning the image to **grayscale** and adding **Gaussian blurring** to smooth it out.
+* **Thresholding**: Then thresholding with **Otsu's method**, but inverse so the objects stand out.
+* **Morphology**: After that, morphology operations—**opening** to remove noise and **dilation** to make the shapes more solid.
+* **Contours**: Contours get detected next, just the **external ones**.
+* **Filtering**: Finally, it **filters small contours by area** so you don’t count junk.
 
-**Usage:**
-The script currently processes directories defined in the `__main__` block. You may need to update the `dataset_screw_bolt` and `dataset_screws` variables to point to your local dataset paths.
+### **Usage for `solution_cv.py**`
 
-```bash
-python solution_cv.py
-```
-Outputs are saved in `output_screw_bolt` and `output_screws` directories relative to the output base path.
+For usage, the script looks at **directories** set in the main block. You have to change `dataset_screw_bolt` and `dataset_screws` to your own paths, I suppose. Run it with `python solution_cv.py`, and outputs go to `output_screw_bolt` and `output_screws` folders.
 
-### 2. `solution_cv_watershed.py`
-This script uses the Watershed algorithm, which is particularly useful for separating touching objects that might be detected as a single contour in simple thresholding methods.
+### **Advanced Segmentation: `solution_cv_watershed.py**`
 
-**Methodology:**
-1.  **Preprocessing**: Grayscale conversion and Gaussian Blurring.
-2.  **Thresholding**: Otsu's binarization.
-3.  **Distance Transform**: Calculates the distance to the nearest zero pixel for each pixel.
-4.  **Watershed Algorithm**: Markers are created based on sure foreground and sure background, and the watershed algorithm segregates the regions.
-5.  **Counting**: Counts unique markers representing objects.
+Another one is **`solution_cv_watershed.py`**. This uses the **watershed algorithm**, which helps **separate touching objects** that might stick together in basic thresholding. It feels like a step up for messy images.
 
-**Usage:**
-You can run this script on a single image.
+* **Preprocessing**: Preprocessing is the same (**grayscale and blurring**).
+* **Thresholding**: Thresholding with **Otsu** again.
+* **Distance Transform**: Then **distance transform** to figure out distances from zero pixels.
+* **Markers**: Markers come from **sure foreground and background** areas, and **watershed splits the regions**.
+* **Counting**: Counting happens by **unique markers** for each object.
 
-```bash
-python solution_cv_watershed.py <path_to_image>
-```
-If no path is provided, it defaults to a hardcoded path in the script.
+### **Usage for `solution_cv_watershed.py**`
 
-## Dependencies
+You run it on a **single image** like `python solution_cv_watershed.py` followed by the path. If you forget the path, it uses some **hardcoded one** inside.
 
-- Python 3.x
-- OpenCV (`opencv-python`)
-- NumPy (`numpy`)
+### **Dependencies**
 
-Install dependencies using:
-```bash
-pip install opencv-python numpy
-```
+Dependencies are **Python 3.x**, **OpenCV** from `opencv-python`, and **NumPy**. Install with `pip install opencv-python numpy`. That seems straightforward, but I might be missing if there are version issues or something.
+
+### **Summary**
+
+Overall, these scripts show how to do counting **without fancy AI**, but the **watershed one handles overlaps better**. It gets a bit messy explaining the steps, though.
