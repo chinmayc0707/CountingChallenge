@@ -1,34 +1,43 @@
-# AI Solution: Screw & Bolt Counting (YOLOv11)
+### **Overview of the SAM Pipeline**
 
-## Approach
-This solution uses **YOLOv11** (Nano/Medium) to detect and segment densely packed screws, nuts, and bolts.
+This notebook goes through a whole process for using **SAM (Segment Anything Model)** to spot objects in images that have a lot of **noise**. It starts with **setting up** everything you need, like installing the **dependencies** and getting the **pre-trained weights** for SAM, specifically the **ViT-B version**. Then it uses SAM to **generate masks** for all possible objects automatically.
 
-### 1. Data Preparation
-- **Challenge:** Detecting overlapping/touching objects in dense piles.
-- **Solution:** Used a custom **Watershed Algorithm** to generate high-quality polygon ground truth labels.
-- **Script:** `prepare_data.py` (Generates images/labels in `datasets/`).
+### **Data-Driven Filtering**
 
-### 2. Model Architecture
-- **Framework:** Ultralytics YOLOv11
-- **Model:** `yolo11n-seg.pt` (Nano) for Speed, `yolo11m-seg.pt` (Medium) for Accuracy.
-- **Image Size:** 640x640
+The **filtering part** is interesting. It looks at the **median area** from all the masks detected at first. That helps **throw out the outliers** that are probably just noise or irrelevant stuff. I think this **data-driven way** makes sense because it **adapts to the image** without hardcoding sizes.
 
-### 3. Usage
+### **Spatial De-duplication**
 
-#### Retraining (For Speed & Accuracy)
-To train the faster Nano model (GPU-optimized):
-```bash
-python train.py
-```
-This is configured for `yolo11n-seg` (Nano) with batch size 4.
+For duplicates, there's **spatial checks** using **IoU (Intersection over Union)** and **containment**. If two masks overlap more than **60 percent**, the smaller one gets removed. And if **80 percent** of a smaller mask is inside a bigger one, it's seen as **part of the same thing**, like separating a screw head from the body. That prevents **counting the same object twice**.
 
-#### Inference
-To count items (configured in `detect.py`):
-```bash
-python detect.py
-```
-*   **Speed:** fast (uses GPU).
-*   **Accuracy:** Requires the training above to finish (approx 100 epochs).
-This will output images with masks and a summary table of counts.
+### **Pre-processing**
 
-To change the source folder, edit the `SOURCE_PATH` variable at the top of `detect.py`.
+Before all that, the image gets **converted to RGB** since SAM wants that, while **OpenCV** loads it as **BGR** by default. It's a small step but **important**.
+
+### **Requirements**
+
+The requirements are for a **GPU setup**, something like **Google Colab** works well. You need **segment-anything**, **opencv-python**, **torch** and **torchvision**, **matplotlib**, and **numpy**.
+
+### **Installation**
+
+**Installation** is straightforward with **pip**. Like `pip install segment-anything opencv-python matplotlib torch torchvision`. Then `wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth` to grab the **model weights**.
+
+### **Area Filtering Logic**
+
+In the filtering for areas, it keeps masks between **0.3 times the median area** and **2.0 times** that. So **minimum area 0.3 * median_area**, **maximum 2.0 * median_area**. This range seems to catch the **main objects** without too much junk.
+
+### **Non-Maximum Suppression (NMS)**
+
+For **non-maximum suppression**, those custom functions handle the **overlaps**. The **IoU** one discards if overlap is over **60 percent**. **Containment** at **80 percent** for the smaller mask.
+
+### **Performance and Accuracy**
+
+In the example they give, **ground truth is 43 screws**, the model **predicts 42**, so **accuracy around 97.67 percent**. That's pretty good; it feels like it misses just one maybe due to some tricky overlap.
+
+### **Visualization**
+
+**Visualization** overlays the masks in **random colors** on the original image. You can see the **unique segments** that got picked as screws. The script makes that **overlay** to check visually what the model found.
+
+### **Conclusion**
+
+Overall, it **assesses accuracy** by comparing to **manual count**. I might be oversimplifying, but the **pipeline seems solid** for noisy images. Some parts like the **exact thresholds** could vary per image, I guess.
