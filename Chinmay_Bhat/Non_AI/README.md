@@ -2,7 +2,7 @@
 
 This folder has some **computer vision stuff** for counting things like **screws and bolts** in pictures. It uses **OpenCV** but skips **deep learning models**, which is kind of nice if you want something simpler. I guess that's the main point here.
 
-### **Traditional Processing: `solution_cv.py**
+### **Traditional Processing: `solution_cv.py`**
 
 The first file is **`solution_cv.py`**. It does **traditional image processing** to find and count objects.
 
